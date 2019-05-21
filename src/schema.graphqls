@@ -4,7 +4,7 @@ schema {
 }
 
 type Query {
-  user: User
+  user(input: FindUserInput!): User
   conversation: Conversation
 }
 
@@ -31,6 +31,10 @@ type Message {
   body: String!
   author: User!
   timestamp: String!
+}
+
+input FindUserInput {
+  username: String!
 }
 
 input CreateUserInput {

@@ -16,6 +16,10 @@ export interface Query {
   conversation?: Conversation;
 }
 
+export interface FindUserInput {
+  username: string;
+}
+
 export interface User {
   id: string;
   username: string;
@@ -79,8 +83,11 @@ export interface QueryTypeResolver<TParent = any> {
   conversation?: QueryToConversationResolver<TParent>;
 }
 
+export interface QueryToUserArgs {
+  input: FindUserInput;
+}
 export interface QueryToUserResolver<TParent = any, TResult = any> {
-  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  (parent: TParent, args: QueryToUserArgs, context: any, info: GraphQLResolveInfo): TResult;
 }
 
 export interface QueryToConversationResolver<TParent = any, TResult = any> {

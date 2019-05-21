@@ -7,7 +7,13 @@ import {
 import to from 'await-to-js';
 
 const user: QueryToUserResolver = async (root, args) => {
-  return User.find({});
+  const [err, user] = await to(
+    User.find({ username: args.input.username }).exec(),
+  );
+  if (err || !user) {
+    return false;
+  }
+  return user;
 };
 
 const createUser: MutationToCreateUserResolver = async (root, args) => {
