@@ -4,9 +4,17 @@ schema {
 
 type Query {
   user: User
+  conversation: Conversation
 }
 
 type User {
   id: ID!
   publicKey: String!
+}
+
+type Conversation {
+  id: ID!
+  from: String!
+  to: String!
+  messages: [String]
 }

@@ -13,11 +13,19 @@ import { GraphQLResolveInfo } from 'graphql';
  *******************************/
 export interface Query {
   user?: User;
+  conversation?: Conversation;
 }
 
 export interface User {
   id: string;
   publicKey: string;
+}
+
+export interface Conversation {
+  id: string;
+  from: string;
+  to: string;
+  messages?: Array<string | null>;
 }
 
 /*********************************
@@ -33,12 +41,18 @@ export interface User {
 export interface Resolver {
   Query?: QueryTypeResolver;
   User?: UserTypeResolver;
+  Conversation?: ConversationTypeResolver;
 }
 export interface QueryTypeResolver<TParent = any> {
   user?: QueryToUserResolver<TParent>;
+  conversation?: QueryToConversationResolver<TParent>;
 }
 
 export interface QueryToUserResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface QueryToConversationResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
 
@@ -52,5 +66,28 @@ export interface UserToIdResolver<TParent = any, TResult = any> {
 }
 
 export interface UserToPublicKeyResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface ConversationTypeResolver<TParent = any> {
+  id?: ConversationToIdResolver<TParent>;
+  from?: ConversationToFromResolver<TParent>;
+  to?: ConversationToToResolver<TParent>;
+  messages?: ConversationToMessagesResolver<TParent>;
+}
+
+export interface ConversationToIdResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface ConversationToFromResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface ConversationToToResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface ConversationToMessagesResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
