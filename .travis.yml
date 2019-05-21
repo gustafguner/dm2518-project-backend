@@ -1,0 +1,32 @@
+language: node_js
+node_js: '10'
+
+cache:
+  directories:
+    - '$HOME/google-cloud-sdk/'
+
+sudo: required
+
+services:
+  - docker
+
+env:
+  global:
+    - GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
+    - GCLOUD_PROJECT_NAME=devops-kth
+    - GCLOUD_CLUSTER_NAME=devops-demo-cluster
+    - GCLOUD_COMPUTE_ZONE=europe-north1-a
+
+script: yarn build
+
+after_success:
+  - bin/docker_push.sh
+  - bin/k8s_deploy.sh
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+notifications:
+  email: false
