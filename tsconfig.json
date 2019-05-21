@@ -10,8 +10,6 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": false,
     "resolveJsonModule": true
   },
   "include": ["src"],
