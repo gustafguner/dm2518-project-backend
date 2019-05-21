@@ -14,8 +14,17 @@ const createConversation: MutationToCreateConversationResolver = async (
   root,
   args,
 ) => {
-  console.log(args);
-  return true;
+  const newConv = new Conversation({
+    from: args.input.from,
+    to: args.input.to,
+    messages: [],
+  });
+  const [saveErr, res] = await to(newConv.save());
+  if (saveErr || !res) {
+    return false;
+  } else {
+    return res;
+  }
 };
 
 export { conversation, createConversation };

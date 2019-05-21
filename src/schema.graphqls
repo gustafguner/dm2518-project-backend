@@ -10,7 +10,8 @@ type Query {
 
 type Mutation {
   createUser(input: CreateUserInput!): User!
-  createConversation(input: CreateConversationInput!): Boolean!
+  createConversation(input: CreateConversationInput!): Conversation!
+  sendMessage(input: SendMessageInput!): Boolean!
 }
 
 type User {
@@ -23,7 +24,13 @@ type Conversation {
   id: ID!
   from: ID!
   to: ID!
-  messages: [String]
+  messages: [Message]
+}
+
+type Message {
+  body: String!
+  author: User!
+  timestamp: String!
 }
 
 input CreateUserInput {
@@ -34,4 +41,10 @@ input CreateUserInput {
 input CreateConversationInput {
   from: String!
   to: String!
+}
+
+input SendMessageInput {
+  authorId: ID!
+  conversationId: ID!
+  body: String!
 }

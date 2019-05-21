@@ -26,12 +26,19 @@ export interface Conversation {
   id: string;
   from: string;
   to: string;
-  messages?: Array<string | null>;
+  messages?: Array<Message | null>;
+}
+
+export interface Message {
+  body: string;
+  author: User;
+  timestamp: string;
 }
 
 export interface Mutation {
   createUser: User;
-  createConversation: boolean;
+  createConversation: Conversation;
+  sendMessage: boolean;
 }
 
 export interface CreateUserInput {
@@ -42,6 +49,12 @@ export interface CreateUserInput {
 export interface CreateConversationInput {
   from: string;
   to: string;
+}
+
+export interface SendMessageInput {
+  authorId: string;
+  conversationId: string;
+  body: string;
 }
 
 /*********************************
@@ -58,6 +71,7 @@ export interface Resolver {
   Query?: QueryTypeResolver;
   User?: UserTypeResolver;
   Conversation?: ConversationTypeResolver;
+  Message?: MessageTypeResolver;
   Mutation?: MutationTypeResolver;
 }
 export interface QueryTypeResolver<TParent = any> {
@@ -114,9 +128,28 @@ export interface ConversationToMessagesResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
 
+export interface MessageTypeResolver<TParent = any> {
+  body?: MessageToBodyResolver<TParent>;
+  author?: MessageToAuthorResolver<TParent>;
+  timestamp?: MessageToTimestampResolver<TParent>;
+}
+
+export interface MessageToBodyResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface MessageToAuthorResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface MessageToTimestampResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
 export interface MutationTypeResolver<TParent = any> {
   createUser?: MutationToCreateUserResolver<TParent>;
   createConversation?: MutationToCreateConversationResolver<TParent>;
+  sendMessage?: MutationToSendMessageResolver<TParent>;
 }
 
 export interface MutationToCreateUserArgs {
@@ -131,4 +164,11 @@ export interface MutationToCreateConversationArgs {
 }
 export interface MutationToCreateConversationResolver<TParent = any, TResult = any> {
   (parent: TParent, args: MutationToCreateConversationArgs, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface MutationToSendMessageArgs {
+  input: SendMessageInput;
+}
+export interface MutationToSendMessageResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: MutationToSendMessageArgs, context: any, info: GraphQLResolveInfo): TResult;
 }
