@@ -1,5 +1,6 @@
 schema {
   query: Query
+  mutation: Mutation
 }
 
 type Query {
@@ -7,14 +8,30 @@ type Query {
   conversation: Conversation
 }
 
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  createConversation(input: CreateConversationInput!): Boolean!
+}
+
 type User {
   id: ID!
+  username: String!
   publicKey: String!
 }
 
 type Conversation {
   id: ID!
+  from: ID!
+  to: ID!
+  messages: [String]
+}
+
+input CreateUserInput {
+  username: String!
+  publicKey: String!
+}
+
+input CreateConversationInput {
   from: String!
   to: String!
-  messages: [String]
 }

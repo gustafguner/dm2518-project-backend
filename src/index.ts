@@ -85,5 +85,3 @@ const dummy2 = async () => {
   console.log(enc.toString());
   console.log(decryptStringWithRsaPrivateKey(enc, data!.privKey));
 };
-
-dummy2();
