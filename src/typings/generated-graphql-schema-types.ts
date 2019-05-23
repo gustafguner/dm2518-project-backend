@@ -40,10 +40,10 @@ export interface Message {
 }
 
 export interface Mutation {
-  createUser: User;
+  createUser?: User;
   createConversation: Conversation;
   sendMessage: boolean;
-  login: User;
+  login?: User;
 }
 
 export interface CreateUserInput {

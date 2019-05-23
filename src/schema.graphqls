@@ -10,10 +10,10 @@ type Query {
 }
 
 type Mutation {
-  createUser(input: CreateUserInput!): User!
+  createUser(input: CreateUserInput!): User
   createConversation(input: CreateConversationInput!): Conversation!
   sendMessage(input: SendMessageInput!): Boolean!
-  login(input: LoginInput!): User!
+  login(input: LoginInput!): User
 }
 
 type Subscription {

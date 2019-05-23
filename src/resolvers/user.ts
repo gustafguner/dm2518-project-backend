@@ -25,10 +25,15 @@ const createUser: MutationToCreateUserResolver = async (root, args) => {
     publicKey: args.input.publicKey,
     password: hashedPassword,
   });
-
+  const [errFind, userFind] = await to(
+    User.findOne({ username: args.input.username }).exec(),
+  );
+  if (userFind) {
+    return null;
+  }
   const [err, user] = await to(newUser.save());
   if (err || !user) {
-    return false;
+    return null;
   }
   return user;
 };
@@ -43,7 +48,7 @@ const login: MutationToLoginResolver = async (root, args) => {
   if (bcrypt.compareSync(args.input.password, user.password)) {
     return user;
   } else {
-    return false;
+    return null;
   }
 };
 
