@@ -9,6 +9,7 @@
     "no-implicit-dependencies": false,
     "ordered-imports": false,
     "no-console": false,
-    "no-unused-expression": false
+    "no-unused-expression": false,
+    "curly": false
   }
 }

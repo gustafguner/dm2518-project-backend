@@ -41,7 +41,7 @@ export interface Message {
 
 export interface Mutation {
   createUser?: AuthResponse;
-  createConversation: Conversation;
+  createConversation?: Conversation;
   sendMessage: boolean;
   login?: AuthResponse;
 }

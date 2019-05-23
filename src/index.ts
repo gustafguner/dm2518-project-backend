@@ -14,13 +14,6 @@ import { createServer } from 'http';
 import * as jwt from 'jsonwebtoken';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
-
-import {
-  encryptStringWithRsaPublicKey,
-  decryptStringWithRsaPrivateKey,
-  test,
-} from './crypto';
-import to from 'await-to-js';
 import User from './models/user';
 
 const PORT = process.env.PORT || 4000;

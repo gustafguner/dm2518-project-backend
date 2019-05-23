@@ -11,7 +11,7 @@ type Query {
 
 type Mutation {
   createUser(input: CreateUserInput!): AuthResponse
-  createConversation(input: CreateConversationInput!): Conversation!
+  createConversation(input: CreateConversationInput!): Conversation
   sendMessage(input: SendMessageInput!): Boolean!
   login(input: LoginInput!): AuthResponse
 }
