@@ -43,11 +43,13 @@ export interface Mutation {
   createUser: User;
   createConversation: Conversation;
   sendMessage: boolean;
+  login: User;
 }
 
 export interface CreateUserInput {
   username: string;
   publicKey: string;
+  password: string;
 }
 
 export interface CreateConversationInput {
@@ -59,6 +61,15 @@ export interface SendMessageInput {
   authorId: string;
   conversationId: string;
   body: string;
+}
+
+export interface LoginInput {
+  username: string;
+  password: string;
+}
+
+export interface Subscription {
+  chatMessage?: Message;
 }
 
 /*********************************
@@ -77,6 +88,7 @@ export interface Resolver {
   Conversation?: ConversationTypeResolver;
   Message?: MessageTypeResolver;
   Mutation?: MutationTypeResolver;
+  Subscription?: SubscriptionTypeResolver;
 }
 export interface QueryTypeResolver<TParent = any> {
   user?: QueryToUserResolver<TParent>;
@@ -157,6 +169,7 @@ export interface MutationTypeResolver<TParent = any> {
   createUser?: MutationToCreateUserResolver<TParent>;
   createConversation?: MutationToCreateConversationResolver<TParent>;
   sendMessage?: MutationToSendMessageResolver<TParent>;
+  login?: MutationToLoginResolver<TParent>;
 }
 
 export interface MutationToCreateUserArgs {
@@ -178,4 +191,23 @@ export interface MutationToSendMessageArgs {
 }
 export interface MutationToSendMessageResolver<TParent = any, TResult = any> {
   (parent: TParent, args: MutationToSendMessageArgs, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface MutationToLoginArgs {
+  input: LoginInput;
+}
+export interface MutationToLoginResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: MutationToLoginArgs, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface SubscriptionTypeResolver<TParent = any> {
+  chatMessage?: SubscriptionToChatMessageResolver<TParent>;
+}
+
+export interface SubscriptionToChatMessageArgs {
+  conversationId: string;
+}
+export interface SubscriptionToChatMessageResolver<TParent = any, TResult = any> {
+  resolve?: (parent: TParent, args: SubscriptionToChatMessageArgs, context: any, info: GraphQLResolveInfo) => TResult;
+  subscribe: (parent: TParent, args: SubscriptionToChatMessageArgs, context: any, info: GraphQLResolveInfo) => AsyncIterator<TResult>;
 }

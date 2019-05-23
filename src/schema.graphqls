@@ -1,6 +1,7 @@
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
 
 type Query {
@@ -12,6 +13,11 @@ type Mutation {
   createUser(input: CreateUserInput!): User!
   createConversation(input: CreateConversationInput!): Conversation!
   sendMessage(input: SendMessageInput!): Boolean!
+  login(input: LoginInput!): User!
+}
+
+type Subscription {
+  chatMessage(conversationId: ID!): Message
 }
 
 type User {
@@ -40,6 +46,12 @@ input FindUserInput {
 input CreateUserInput {
   username: String!
   publicKey: String!
+  password: String!
+}
+
+input LoginInput {
+  username: String!
+  password: String!
 }
 
 input CreateConversationInput {
