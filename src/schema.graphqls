@@ -10,10 +10,10 @@ type Query {
 }
 
 type Mutation {
-  createUser(input: CreateUserInput!): User
+  createUser(input: CreateUserInput!): AuthResponse
   createConversation(input: CreateConversationInput!): Conversation!
   sendMessage(input: SendMessageInput!): Boolean!
-  login(input: LoginInput!): User
+  login(input: LoginInput!): AuthResponse
 }
 
 type Subscription {
@@ -37,6 +37,11 @@ type Message {
   body: String!
   author: User!
   timestamp: String!
+}
+
+type AuthResponse {
+  user: User
+  token: String
 }
 
 input FindUserInput {

@@ -13,13 +13,15 @@ export const pubsub = new PubSub();
 import to from 'await-to-js';
 
 const conversation: QueryToConversationResolver = async (root, args) => {
-  return Conversation.find({});
+  return Conversation.findOne({});
 };
 
 const createConversation: MutationToCreateConversationResolver = async (
   root,
   args,
+  { user },
 ) => {
+  console.log(`USer: ${user}`);
   const newConv = new Conversation({
     from: args.input.from,
     to: args.input.to,

@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import * as express from 'express';
 import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
@@ -8,8 +11,9 @@ import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { schema } from './schema';
 import { createServer } from 'http';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import * as jwt from 'jsonwebtoken';
+import * as passport from 'passport';
+import { jwtStrategy } from './passport';
 
 import {
   encryptStringWithRsaPublicKey,
@@ -17,8 +21,10 @@ import {
   test,
 } from './crypto';
 import to from 'await-to-js';
+import User from './models/user';
 
 const PORT = process.env.PORT || 4000;
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 mongoose
   .connect(process.env.MONGODB_URL!, {
@@ -43,9 +49,31 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(cors());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(jwtStrategy);
 
 const server = new ApolloServer({
   schema,
+  context: async ({ req }) => {
+    const authorization = req.headers.authorization;
+    const token = authorization ? authorization.substring(7) : null;
+    console.log(`Token: ${token}`);
+    let decodedToken = null;
+
+    try {
+      decodedToken = jwt.verify(token, JWT_SECRET);
+    } catch {}
+
+    const u = decodedToken as any;
+
+    const user =
+      decodedToken !== null ? await User.findOne({ _id: u.id }) : null;
+
+    return {
+      user,
+    };
+  },
   playground: {
     subscriptionEndpoint: '/subscriptions',
   },
@@ -70,18 +98,3 @@ ws.listen(PORT, () => {
     },
   );
 });
-
-const dummy = async () => {
-  const data = await test();
-  return data;
-};
-
-const dummy2 = async () => {
-  const [err, data] = await to(dummy());
-  if (err) {
-    return;
-  }
-  const enc = encryptStringWithRsaPublicKey('whaddup', data!.pubKey);
-  console.log(enc.toString());
-  console.log(decryptStringWithRsaPrivateKey(enc, data!.privKey));
-};

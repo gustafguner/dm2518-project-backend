@@ -40,16 +40,21 @@ export interface Message {
 }
 
 export interface Mutation {
-  createUser?: User;
+  createUser?: AuthResponse;
   createConversation: Conversation;
   sendMessage: boolean;
-  login?: User;
+  login?: AuthResponse;
 }
 
 export interface CreateUserInput {
   username: string;
   publicKey: string;
   password: string;
+}
+
+export interface AuthResponse {
+  user?: User;
+  token?: string;
 }
 
 export interface CreateConversationInput {
@@ -88,6 +93,7 @@ export interface Resolver {
   Conversation?: ConversationTypeResolver;
   Message?: MessageTypeResolver;
   Mutation?: MutationTypeResolver;
+  AuthResponse?: AuthResponseTypeResolver;
   Subscription?: SubscriptionTypeResolver;
 }
 export interface QueryTypeResolver<TParent = any> {
@@ -198,6 +204,19 @@ export interface MutationToLoginArgs {
 }
 export interface MutationToLoginResolver<TParent = any, TResult = any> {
   (parent: TParent, args: MutationToLoginArgs, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface AuthResponseTypeResolver<TParent = any> {
+  user?: AuthResponseToUserResolver<TParent>;
+  token?: AuthResponseToTokenResolver<TParent>;
+}
+
+export interface AuthResponseToUserResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface AuthResponseToTokenResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
 
 export interface SubscriptionTypeResolver<TParent = any> {

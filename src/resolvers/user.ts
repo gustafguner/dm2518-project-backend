@@ -7,6 +7,7 @@ import {
 
 import to from 'await-to-js';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 
 const user: QueryToUserResolver = async (root, args) => {
   const [err, user] = await to(
@@ -32,10 +33,19 @@ const createUser: MutationToCreateUserResolver = async (root, args) => {
     return null;
   }
   const [err, user] = await to(newUser.save());
+
   if (err || !user) {
     return null;
   }
-  return user;
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
+    expiresIn: 604800, // 1 week
+  });
+
+  return {
+    user,
+    token,
+  };
 };
 
 const login: MutationToLoginResolver = async (root, args) => {
@@ -46,7 +56,14 @@ const login: MutationToLoginResolver = async (root, args) => {
     return false;
   }
   if (bcrypt.compareSync(args.input.password, user.password)) {
-    return user;
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
+      expiresIn: 604800, // 1 week
+    });
+
+    return {
+      user,
+      token,
+    };
   } else {
     return null;
   }
