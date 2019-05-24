@@ -3,6 +3,7 @@ import {
   MutationToCreateConversationResolver,
   SubscriptionToChatMessageResolver,
   MutationToSendMessageResolver,
+  QueryToConversationsResolver,
 } from '../typings/generated-graphql-schema-types';
 import Conversation from '../models/conversation';
 import to from 'await-to-js';
@@ -12,6 +13,25 @@ export const pubsub = new PubSub();
 
 const conversation: QueryToConversationResolver = async (root, args) => {
   return Conversation.findOne({});
+};
+
+const conversations: QueryToConversationsResolver = async (
+  root,
+  args,
+  { user },
+) => {
+  if (!user) return null;
+  const [err, conversations] = await to(
+    Conversation.find()
+      .or([{ from: user.username }, { to: user.username }])
+      .exec(),
+  );
+
+  if (err) {
+    return null;
+  }
+
+  return conversations;
 };
 
 const createConversation: MutationToCreateConversationResolver = async (
@@ -84,6 +104,7 @@ const subscribeToChatMessage: SubscriptionToChatMessageResolver = {
 
 export {
   conversation,
+  conversations,
   createConversation,
   subscribeToChatMessage,
   sendMessage,

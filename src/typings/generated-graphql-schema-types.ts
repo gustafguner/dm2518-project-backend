@@ -14,6 +14,7 @@ import { GraphQLResolveInfo } from 'graphql';
 export interface Query {
   user?: User;
   conversation?: Conversation;
+  conversations?: Array<Conversation | null>;
 }
 
 export interface User {
@@ -90,6 +91,7 @@ export interface Resolver {
 export interface QueryTypeResolver<TParent = any> {
   user?: QueryToUserResolver<TParent>;
   conversation?: QueryToConversationResolver<TParent>;
+  conversations?: QueryToConversationsResolver<TParent>;
 }
 
 export interface QueryToUserArgs {
@@ -100,6 +102,10 @@ export interface QueryToUserResolver<TParent = any, TResult = any> {
 }
 
 export interface QueryToConversationResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface QueryToConversationsResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
 
