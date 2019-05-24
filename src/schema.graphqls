@@ -5,13 +5,13 @@ schema {
 }
 
 type Query {
-  user(input: FindUserInput!): User
+  user(username: String): User
   conversation: Conversation
 }
 
 type Mutation {
   createUser(input: CreateUserInput!): AuthResponse
-  createConversation(input: CreateConversationInput!): Conversation
+  createConversation(username: String!): Conversation
   sendMessage(input: SendMessageInput!): Boolean!
   login(input: LoginInput!): AuthResponse
 }
@@ -44,10 +44,6 @@ type AuthResponse {
   token: String
 }
 
-input FindUserInput {
-  username: String!
-}
-
 input CreateUserInput {
   username: String!
   publicKey: String!
@@ -57,11 +53,6 @@ input CreateUserInput {
 input LoginInput {
   username: String!
   password: String!
-}
-
-input CreateConversationInput {
-  from: String!
-  to: String!
 }
 
 input SendMessageInput {

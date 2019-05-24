@@ -16,10 +16,6 @@ export interface Query {
   conversation?: Conversation;
 }
 
-export interface FindUserInput {
-  username: string;
-}
-
 export interface User {
   id: string;
   username: string;
@@ -55,11 +51,6 @@ export interface CreateUserInput {
 export interface AuthResponse {
   user?: User;
   token?: string;
-}
-
-export interface CreateConversationInput {
-  from: string;
-  to: string;
 }
 
 export interface SendMessageInput {
@@ -102,7 +93,7 @@ export interface QueryTypeResolver<TParent = any> {
 }
 
 export interface QueryToUserArgs {
-  input: FindUserInput;
+  username?: string;
 }
 export interface QueryToUserResolver<TParent = any, TResult = any> {
   (parent: TParent, args: QueryToUserArgs, context: any, info: GraphQLResolveInfo): TResult;
@@ -186,7 +177,7 @@ export interface MutationToCreateUserResolver<TParent = any, TResult = any> {
 }
 
 export interface MutationToCreateConversationArgs {
-  input: CreateConversationInput;
+  username: string;
 }
 export interface MutationToCreateConversationResolver<TParent = any, TResult = any> {
   (parent: TParent, args: MutationToCreateConversationArgs, context: any, info: GraphQLResolveInfo): TResult;

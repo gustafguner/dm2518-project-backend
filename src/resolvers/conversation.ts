@@ -16,21 +16,21 @@ const conversation: QueryToConversationResolver = async (root, args) => {
 
 const createConversation: MutationToCreateConversationResolver = async (
   root,
-  args,
+  { username },
   { user },
 ) => {
   if (!user) return null;
 
   const newConversation = new Conversation({
-    from: args.input.from,
-    to: args.input.to,
+    from: user.username,
+    to: username,
     messages: [],
   });
 
   const [err, res] = await to(newConversation.save());
 
   if (err || !res) {
-    return false;
+    return null;
   }
 
   return res;

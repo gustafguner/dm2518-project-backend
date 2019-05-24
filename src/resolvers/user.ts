@@ -8,10 +8,13 @@ import * as jwt from 'jsonwebtoken';
 import to from 'await-to-js';
 import User from '../models/user';
 
-const user: QueryToUserResolver = async (root, args, { user }) => {
-  const [err, foundUser] = await to(
-    User.find({ username: args.input.username }).exec(),
-  );
+const user: QueryToUserResolver = async (root, { username }, { user }) => {
+  if (!username) {
+    if (!user) return null;
+    return user;
+  }
+
+  const [err, foundUser] = await to(User.find({ username }).exec());
 
   if (err || !foundUser) {
     return null;
