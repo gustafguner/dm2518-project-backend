@@ -51,7 +51,7 @@ const server = new ApolloServer({
   context: async ({ req }) => {
     const authorization = req.headers.authorization;
     const token = authorization ? authorization.substring(7) : null;
-    console.log(`Token: ${token}`);
+
     let decodedToken = null;
 
     try {
@@ -84,6 +84,25 @@ ws.listen(PORT, () => {
       execute,
       subscribe,
       schema,
+      onConnect: async (connectionParams: any, webSocket: any) => {
+        const token = connectionParams.token;
+
+        let decodedToken = null;
+        try {
+          decodedToken = jwt.verify(token, JWT_SECRET);
+        } catch {
+          throw new Error();
+        }
+
+        const u = decodedToken as any;
+
+        const user =
+          decodedToken !== null ? await User.findOne({ _id: u.id }) : null;
+
+        return {
+          user,
+        };
+      },
     },
     {
       server: ws,

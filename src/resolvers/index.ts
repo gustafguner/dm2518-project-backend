@@ -6,6 +6,7 @@ import {
   createConversation,
   subscribeToChatMessage,
   sendMessage,
+  subscribeToConversation,
 } from './conversation';
 
 const resolvers: Resolver = {
@@ -22,6 +23,7 @@ const resolvers: Resolver = {
   },
   Subscription: {
     chatMessage: subscribeToChatMessage,
+    conversation: subscribeToConversation,
   },
 };
 

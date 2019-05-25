@@ -4,6 +4,7 @@ import {
   SubscriptionToChatMessageResolver,
   MutationToSendMessageResolver,
   QueryToConversationsResolver,
+  SubscriptionToConversationResolver,
 } from '../typings/generated-graphql-schema-types';
 import Conversation from '../models/conversation';
 import to from 'await-to-js';
@@ -11,8 +12,27 @@ import { PubSub, withFilter } from 'graphql-subscriptions';
 
 export const pubsub = new PubSub();
 
-const conversation: QueryToConversationResolver = async (root, args) => {
-  return Conversation.findOne({});
+const conversation: QueryToConversationResolver = async (
+  root,
+  { conversationId },
+  { user },
+) => {
+  const [err, conversation] = await to(
+    Conversation.findById(conversationId).exec(),
+  );
+
+  if (err || !conversation) {
+    return null;
+  }
+
+  if (
+    conversation.from !== user.username &&
+    conversation.to !== user.username
+  ) {
+    return null;
+  }
+
+  return conversation;
 };
 
 const conversations: QueryToConversationsResolver = async (
@@ -52,6 +72,10 @@ const createConversation: MutationToCreateConversationResolver = async (
   if (err || !res) {
     return null;
   }
+
+  pubsub.publish('CONVERSATION', {
+    conversation: newConversation,
+  });
 
   return res;
 };
@@ -102,10 +126,23 @@ const subscribeToChatMessage: SubscriptionToChatMessageResolver = {
   ),
 };
 
+const subscribeToConversation: SubscriptionToConversationResolver = {
+  subscribe: withFilter(
+    () => pubsub.asyncIterator('CONVERSATION'),
+    (payload, args, { user }) => {
+      return (
+        payload.conversation.from === user.username ||
+        payload.conversation.to === user.username
+      );
+    },
+  ),
+};
+
 export {
   conversation,
   conversations,
   createConversation,
   subscribeToChatMessage,
+  subscribeToConversation,
   sendMessage,
 };

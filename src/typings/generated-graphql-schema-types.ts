@@ -66,6 +66,7 @@ export interface LoginInput {
 }
 
 export interface Subscription {
+  conversation?: Conversation;
   chatMessage?: Message;
 }
 
@@ -101,8 +102,11 @@ export interface QueryToUserResolver<TParent = any, TResult = any> {
   (parent: TParent, args: QueryToUserArgs, context: any, info: GraphQLResolveInfo): TResult;
 }
 
+export interface QueryToConversationArgs {
+  conversationId: string;
+}
 export interface QueryToConversationResolver<TParent = any, TResult = any> {
-  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  (parent: TParent, args: QueryToConversationArgs, context: any, info: GraphQLResolveInfo): TResult;
 }
 
 export interface QueryToConversationsResolver<TParent = any, TResult = any> {
@@ -217,7 +221,13 @@ export interface AuthResponseToTokenResolver<TParent = any, TResult = any> {
 }
 
 export interface SubscriptionTypeResolver<TParent = any> {
+  conversation?: SubscriptionToConversationResolver<TParent>;
   chatMessage?: SubscriptionToChatMessageResolver<TParent>;
+}
+
+export interface SubscriptionToConversationResolver<TParent = any, TResult = any> {
+  resolve?: (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo) => TResult;
+  subscribe: (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo) => AsyncIterator<TResult>;
 }
 
 export interface SubscriptionToChatMessageArgs {
