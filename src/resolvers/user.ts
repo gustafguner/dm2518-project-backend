@@ -27,7 +27,8 @@ const createUser: MutationToCreateUserResolver = async (root, args) => {
   const [errFind, userFind] = await to(
     User.findOne({ username: args.input.username }).exec(),
   );
-  if (userFind) return null;
+
+  if (errFind || userFind) return null;
 
   const hashedPassword = bcrypt.hashSync(args.input.password, 10);
   const newUser = new User({

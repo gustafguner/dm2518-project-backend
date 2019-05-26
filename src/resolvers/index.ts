@@ -4,6 +4,7 @@ import {
   conversation,
   conversations,
   createConversation,
+  createSymmetricKey,
   subscribeToMessage,
   sendMessage,
   subscribeToConversation,
@@ -18,6 +19,7 @@ const resolvers: Resolver = {
   Mutation: {
     createUser,
     createConversation,
+    createSymmetricKey,
     sendMessage,
     login,
   },

@@ -5,6 +5,7 @@ import {
   QueryToConversationsResolver,
   SubscriptionToConversationResolver,
   SubscriptionToMessageResolver,
+  MutationToCreateSymmetricKeyResolver,
 } from '../typings/generated-graphql-schema-types';
 import Conversation from '../models/conversation';
 import to from 'await-to-js';
@@ -79,11 +80,42 @@ const createConversation: MutationToCreateConversationResolver = async (
     return null;
   }
 
+  await Conversation.populate(res, { path: 'from' });
+  await Conversation.populate(res, { path: 'to' });
+
   pubsub.publish('CONVERSATION', {
-    conversation: newConversation,
+    conversation: res,
   });
 
   return res;
+};
+
+const createSymmetricKey: MutationToCreateSymmetricKeyResolver = async (
+  root,
+  { input },
+  { user },
+) => {
+  if (!user) return false;
+
+  const [findErr, conversation] = await to(
+    Conversation.findById(input.conversationId).exec(),
+  );
+
+  if (findErr || !conversation) {
+    return false;
+  }
+
+  conversation.fromKey = input.fromKey;
+  conversation.toKey = input.toKey;
+  conversation.iv = input.iv;
+
+  const [saveErr] = await to(conversation.save());
+
+  if (saveErr) {
+    return false;
+  }
+
+  return true;
 };
 
 const sendMessage: MutationToSendMessageResolver = async (
@@ -140,8 +172,8 @@ const subscribeToConversation: SubscriptionToConversationResolver = {
     () => pubsub.asyncIterator('CONVERSATION'),
     (payload, args, { user }) => {
       return (
-        payload.conversation.from == user._id ||
-        payload.conversation.to == user._id
+        payload.conversation.from._id.equals(user._id) ||
+        payload.conversation.to._id.equals(user._id)
       );
     },
   ),
@@ -151,6 +183,7 @@ export {
   conversation,
   conversations,
   createConversation,
+  createSymmetricKey,
   subscribeToMessage,
   subscribeToConversation,
   sendMessage,

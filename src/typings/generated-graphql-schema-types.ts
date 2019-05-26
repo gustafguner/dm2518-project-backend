@@ -28,6 +28,9 @@ export interface Conversation {
   from: User;
   to: User;
   messages?: Array<Message | null>;
+  fromKey?: string;
+  toKey?: string;
+  iv?: string;
 }
 
 export interface Message {
@@ -39,6 +42,7 @@ export interface Message {
 export interface Mutation {
   createUser?: AuthResponse;
   createConversation?: Conversation;
+  createSymmetricKey: boolean;
   sendMessage: boolean;
   login?: AuthResponse;
 }
@@ -52,6 +56,13 @@ export interface CreateUserInput {
 export interface AuthResponse {
   user?: User;
   token?: string;
+}
+
+export interface CreateSymmetricKeyInput {
+  conversationId: string;
+  fromKey: string;
+  toKey: string;
+  iv: string;
 }
 
 export interface SendMessageInput {
@@ -135,6 +146,9 @@ export interface ConversationTypeResolver<TParent = any> {
   from?: ConversationToFromResolver<TParent>;
   to?: ConversationToToResolver<TParent>;
   messages?: ConversationToMessagesResolver<TParent>;
+  fromKey?: ConversationToFromKeyResolver<TParent>;
+  toKey?: ConversationToToKeyResolver<TParent>;
+  iv?: ConversationToIvResolver<TParent>;
 }
 
 export interface ConversationToIdResolver<TParent = any, TResult = any> {
@@ -150,6 +164,18 @@ export interface ConversationToToResolver<TParent = any, TResult = any> {
 }
 
 export interface ConversationToMessagesResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface ConversationToFromKeyResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface ConversationToToKeyResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface ConversationToIvResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
 
@@ -174,6 +200,7 @@ export interface MessageToTimestampResolver<TParent = any, TResult = any> {
 export interface MutationTypeResolver<TParent = any> {
   createUser?: MutationToCreateUserResolver<TParent>;
   createConversation?: MutationToCreateConversationResolver<TParent>;
+  createSymmetricKey?: MutationToCreateSymmetricKeyResolver<TParent>;
   sendMessage?: MutationToSendMessageResolver<TParent>;
   login?: MutationToLoginResolver<TParent>;
 }
@@ -190,6 +217,13 @@ export interface MutationToCreateConversationArgs {
 }
 export interface MutationToCreateConversationResolver<TParent = any, TResult = any> {
   (parent: TParent, args: MutationToCreateConversationArgs, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface MutationToCreateSymmetricKeyArgs {
+  input: CreateSymmetricKeyInput;
+}
+export interface MutationToCreateSymmetricKeyResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: MutationToCreateSymmetricKeyArgs, context: any, info: GraphQLResolveInfo): TResult;
 }
 
 export interface MutationToSendMessageArgs {

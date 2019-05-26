@@ -13,6 +13,7 @@ type Query {
 type Mutation {
   createUser(input: CreateUserInput!): AuthResponse
   createConversation(username: String!): Conversation
+  createSymmetricKey(input: CreateSymmetricKeyInput!): Boolean!
   sendMessage(input: SendMessageInput!): Boolean!
   login(input: LoginInput!): AuthResponse
 }
@@ -33,6 +34,9 @@ type Conversation {
   from: User!
   to: User!
   messages: [Message]
+  fromKey: String
+  toKey: String
+  iv: String
 }
 
 type Message {
@@ -50,6 +54,13 @@ input CreateUserInput {
   username: String!
   publicKey: String!
   password: String!
+}
+
+input CreateSymmetricKeyInput {
+  conversationId: ID!
+  fromKey: String!
+  toKey: String!
+  iv: String!
 }
 
 input LoginInput {
