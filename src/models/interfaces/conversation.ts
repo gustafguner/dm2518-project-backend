@@ -8,7 +8,7 @@ export interface IMessage {
 }
 
 export interface IConversation extends mongoose.Document {
-  from: string;
-  to: string;
+  from: IUser;
+  to: IUser;
   messages: [IMessage];
 }

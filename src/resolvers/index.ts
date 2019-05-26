@@ -4,7 +4,7 @@ import {
   conversation,
   conversations,
   createConversation,
-  subscribeToChatMessage,
+  subscribeToMessage,
   sendMessage,
   subscribeToConversation,
 } from './conversation';
@@ -22,7 +22,7 @@ const resolvers: Resolver = {
     login,
   },
   Subscription: {
-    chatMessage: subscribeToChatMessage,
+    message: subscribeToMessage,
     conversation: subscribeToConversation,
   },
 };

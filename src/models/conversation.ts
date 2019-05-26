@@ -9,8 +9,8 @@ const Message = {
 };
 
 export const ConversationSchema = new mongoose.Schema({
-  from: { type: String, required: true },
-  to: { type: String, required: true },
+  from: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  to: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   messages: [Message],
 });
 

@@ -25,8 +25,8 @@ export interface User {
 
 export interface Conversation {
   id: string;
-  from: string;
-  to: string;
+  from: User;
+  to: User;
   messages?: Array<Message | null>;
 }
 
@@ -55,7 +55,6 @@ export interface AuthResponse {
 }
 
 export interface SendMessageInput {
-  authorId: string;
   conversationId: string;
   body: string;
 }
@@ -67,7 +66,7 @@ export interface LoginInput {
 
 export interface Subscription {
   conversation?: Conversation;
-  chatMessage?: Message;
+  message?: Message;
 }
 
 /*********************************
@@ -222,7 +221,7 @@ export interface AuthResponseToTokenResolver<TParent = any, TResult = any> {
 
 export interface SubscriptionTypeResolver<TParent = any> {
   conversation?: SubscriptionToConversationResolver<TParent>;
-  chatMessage?: SubscriptionToChatMessageResolver<TParent>;
+  message?: SubscriptionToMessageResolver<TParent>;
 }
 
 export interface SubscriptionToConversationResolver<TParent = any, TResult = any> {
@@ -230,10 +229,10 @@ export interface SubscriptionToConversationResolver<TParent = any, TResult = any
   subscribe: (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo) => AsyncIterator<TResult>;
 }
 
-export interface SubscriptionToChatMessageArgs {
+export interface SubscriptionToMessageArgs {
   conversationId: string;
 }
-export interface SubscriptionToChatMessageResolver<TParent = any, TResult = any> {
-  resolve?: (parent: TParent, args: SubscriptionToChatMessageArgs, context: any, info: GraphQLResolveInfo) => TResult;
-  subscribe: (parent: TParent, args: SubscriptionToChatMessageArgs, context: any, info: GraphQLResolveInfo) => AsyncIterator<TResult>;
+export interface SubscriptionToMessageResolver<TParent = any, TResult = any> {
+  resolve?: (parent: TParent, args: SubscriptionToMessageArgs, context: any, info: GraphQLResolveInfo) => TResult;
+  subscribe: (parent: TParent, args: SubscriptionToMessageArgs, context: any, info: GraphQLResolveInfo) => AsyncIterator<TResult>;
 }

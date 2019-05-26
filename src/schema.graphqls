@@ -19,7 +19,7 @@ type Mutation {
 
 type Subscription {
   conversation: Conversation
-  chatMessage(conversationId: ID!): Message
+  message(conversationId: ID!): Message
 }
 
 type User {
@@ -30,8 +30,8 @@ type User {
 
 type Conversation {
   id: ID!
-  from: ID!
-  to: ID!
+  from: User!
+  to: User!
   messages: [Message]
 }
 
@@ -58,7 +58,6 @@ input LoginInput {
 }
 
 input SendMessageInput {
-  authorId: ID!
   conversationId: ID!
   body: String!
 }

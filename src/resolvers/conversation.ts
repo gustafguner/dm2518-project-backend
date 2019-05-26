@@ -1,14 +1,15 @@
 import {
   QueryToConversationResolver,
   MutationToCreateConversationResolver,
-  SubscriptionToChatMessageResolver,
   MutationToSendMessageResolver,
   QueryToConversationsResolver,
   SubscriptionToConversationResolver,
+  SubscriptionToMessageResolver,
 } from '../typings/generated-graphql-schema-types';
 import Conversation from '../models/conversation';
 import to from 'await-to-js';
 import { PubSub, withFilter } from 'graphql-subscriptions';
+import User from '../models/user';
 
 export const pubsub = new PubSub();
 
@@ -18,17 +19,15 @@ const conversation: QueryToConversationResolver = async (
   { user },
 ) => {
   const [err, conversation] = await to(
-    Conversation.findById(conversationId).exec(),
+    Conversation.findOne({ _id: conversationId })
+      .or([{ from: user._id }, { to: user._id }])
+      .populate('from')
+      .populate('to')
+      .populate('messages.author')
+      .exec(),
   );
 
   if (err || !conversation) {
-    return null;
-  }
-
-  if (
-    conversation.from !== user.username &&
-    conversation.to !== user.username
-  ) {
     return null;
   }
 
@@ -41,9 +40,12 @@ const conversations: QueryToConversationsResolver = async (
   { user },
 ) => {
   if (!user) return null;
+
   const [err, conversations] = await to(
     Conversation.find()
-      .or([{ from: user.username }, { to: user.username }])
+      .or([{ from: user._id }, { to: user._id }])
+      .populate('from')
+      .populate('to')
       .exec(),
   );
 
@@ -61,9 +63,13 @@ const createConversation: MutationToCreateConversationResolver = async (
 ) => {
   if (!user) return null;
 
+  const [findErr, toUser] = await to(User.findOne({ username }).exec());
+
+  if (findErr || !toUser) return null;
+
   const newConversation = new Conversation({
-    from: user.username,
-    to: username,
+    from: user._id,
+    to: toUser._id,
     messages: [],
   });
 
@@ -91,15 +97,15 @@ const sendMessage: MutationToSendMessageResolver = async (
     Conversation.findById(args.input.conversationId).exec(),
   );
 
-  const newMessage = {
-    author: args.input.authorId,
-    body: args.input.body,
-    timestamp: new Date(),
-  };
-
   if (findErr || !conv) {
     return false;
   }
+
+  const newMessage = {
+    author: user._id,
+    body: args.input.body,
+    timestamp: new Date(),
+  };
 
   conv.messages.push(newMessage);
 
@@ -110,16 +116,19 @@ const sendMessage: MutationToSendMessageResolver = async (
     return false;
   }
 
-  pubsub.publish('CHAT_MESSAGE', {
-    chatMessage: newMessage,
+  await Conversation.populate(updatedConv, { path: 'messages.author' });
+
+  pubsub.publish('MESSAGE', {
+    message: updatedConv.messages[updatedConv.messages.length - 1],
     conversationId: args.input.conversationId,
   });
+
   return true;
 };
 
-const subscribeToChatMessage: SubscriptionToChatMessageResolver = {
+const subscribeToMessage: SubscriptionToMessageResolver = {
   subscribe: withFilter(
-    () => pubsub.asyncIterator('CHAT_MESSAGE'),
+    () => pubsub.asyncIterator('MESSAGE'),
     (payload, { conversationId }) => {
       return payload.conversationId == conversationId;
     },
@@ -131,8 +140,8 @@ const subscribeToConversation: SubscriptionToConversationResolver = {
     () => pubsub.asyncIterator('CONVERSATION'),
     (payload, args, { user }) => {
       return (
-        payload.conversation.from === user.username ||
-        payload.conversation.to === user.username
+        payload.conversation.from == user._id ||
+        payload.conversation.to == user._id
       );
     },
   ),
@@ -142,7 +151,7 @@ export {
   conversation,
   conversations,
   createConversation,
-  subscribeToChatMessage,
+  subscribeToMessage,
   subscribeToConversation,
   sendMessage,
 };
