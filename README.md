@@ -1,6 +1,6 @@
 # PSST backend
 
-This is the backend for the [app](https://github.com/gustafguner/dm2518-project-app.git). This is part our project in the course DM2518 at KTH.
+This is the backend for the [app](https://github.com/gustafguner/dm2518-project-app.git). This is part of our project in the course DM2518 at KTH.
 
 ## Install
 
