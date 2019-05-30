@@ -31,7 +31,8 @@ MONGODB_PASSWORD="xxxxx"
 JWT_SECRET="xxxxx"
 ```
 
-#####N.b.
+##### N.b.
+
 Change `xxxxx` to relevant strings, i.e. for MongoDB actual login credentials, and regarding the `JWT_SECRET`, generate a secrect string. Thus, this backend requires access to a MongoDB instance.
 
 Start the server with `yarn watch` for development purposes, or just start it with `yarn start`
